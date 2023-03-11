@@ -1,0 +1,108 @@
+<div class="container" style="margin-top:80px;">
+    <h1 style="color:#fff;"></h1>
+    <?php
+    require 'config.php';
+    if(isset($_GET['search'])){
+        $filtervalues = $_GET['search'];
+        $query = "SELECT * FROM post WHERE CONCAT(id,ptitle,pdis,state,district,paddr) LIKE '%$filtervalues%'";
+        $query_run = mysqli_query($conn,$query);
+        if(mysqli_num_rows($query_run)>0){
+            foreach($query_run as $items){
+            ?>
+            <div class="card">
+                <h1><?php echo $items['ptitle']; ?> <?php echo $items['state']; ?> state in <?php echo $items['district']; ?> (<?php echo $items['paddr']; ?>) </h1>
+                <div class="info">
+                    <?php if($items['type']=='VIDEO'){
+                        ?>
+                <video src="upload/<?=$items['video']?>"controls></video>
+                <?php
+                }
+                elseif($items['type'] == 'IMAGE'){
+                ?>
+                    <img src="upload/<?php echo $items['image']; ?>" style="width:350px" alt="">
+                <?php } ?>
+                    <h2>story Id : <a href="check.php?id=<?php echo $items['id']; ?>" ><?php echo $items['id']; ?></a></h2>
+                    <p><?php echo $items['pdis']; ?></p>
+                </div>
+            </div>
+            <?php
+            }
+        }
+    }else{
+    $sql = "SELECT * FROM problem ";
+    $res = mysqli_query($conn,$sql);
+    if(mysqli_num_rows($res)>0){
+        while($video = mysqli_fetch_assoc($res)){
+            ?>
+            <div class="card">
+                <h1><?php echo $video['ptitle']; ?> problem from <?php echo $video['state']; ?> state in <?php echo $video['district']; ?> (<?php echo $video['paddr']; ?>) </h1>
+                <div class="info">
+                <?php if($video['type']=='VIDEO'){
+                        ?>
+                <video src="upload/<?=$video['video']?>"controls></video>
+                <?php
+                }
+                elseif($video['type'] == 'IMAGE'){
+                ?>
+                    <img src="upload/<?php echo $video['image']; ?>" style="width:350px" alt="">
+                <?php } ?>
+                    <h2>Problem Id : <a href="check.php?id=<?php echo $video['id']; ?>" ><?php echo $video['id']; ?></a></h2>
+                    <p><?php echo $video['pdis']; ?></p>
+                </div>
+            </div>
+            <?php
+        }
+    }
+    }
+?>
+</div>
+
+
+
+
+<div class="search">
+    <span class="icon">
+        <ion-icon name="search-outline" class="searchbtn"></ion-icon>
+        <ion-icon name="close-outline" class="closebtn"></ion-icon>
+    </span>
+</div>
+<ion-icon name="menu-outline" class="menutoggle" style="color:#fff"></ion-icon>
+<div class="searchbox">
+    <input type="text" placeholder="Search for posts">
+</div>
+
+
+
+<?php echo $video['ptitle']; ?><br><?php echo $video['name']; ?><br><?php echo $video['state']; ?> state in <?php echo $video['district']; ?><br> (<?php echo $video['paddr']; ?>) 
+
+<?php echo $_SESSION['name']; ?>
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        require 'config.php';
+        $sql = mysqli_query($conn, "SELECT * FROM `list` WHERE too = '".$_SESSION['name']."'");
+        while($row = $sql->fetch_assoc()){
+        ?>  <tr>
+                <td><?php echo $row['fromm']; ?></td>
+                <td> <?php if($row['status']==1){    
+                    echo '<a href="accept.php?id='.$row['from'].'" class="btn btn-primary btn-sm">Accept</a>';
+                    }else{
+                    echo '<a href="decline.php?id='.$row['from'].'" class="btn btn-danger btn-sm">decline</a>';    
+                    }
+                    ?>
+                </td>
+            </tr>
+            <?php
+        }
+        ?>
+    </tbody>
+</table>
